@@ -1,173 +1,155 @@
-# Theory
+# Theory Background: 1D Time-Dependent Schrödinger Equation
 
-This project studies the one-dimensional time-dependent Schrödinger equation:
+This document explains the physical and numerical background of the one-dimensional Schrödinger simulations implemented in this repository.
 
-\[
-i\,\frac{\partial \psi(x,t)}{\partial t} = \left(-\frac{1}{2}\frac{\partial^2}{\partial x^2} + V(x)\right)\psi(x,t).
-\]
-
-The wave function \(\psi\) is complex-valued, and the probability density is \(|\psi|^2\). The total probability (norm) is
-
-\[
-\int |\psi(x,t)|^2\,dx,
-\]
-
-which should remain constant under unitary evolution.
-
-The repository explores physically relevant settings present in the source implementation:
-- Free-packet propagation \((V=0)\),
-- Infinite-well and hard-wall behavior,
-- Harmonic-like confinement,
-- Finite wells and barriers for scattering diagnostics.
-
-Both Dirichlet and periodic boundary conditions are included in the numerical experiments.
+The project studies the time evolution of quantum wave packets under different potentials and boundary conditions. The main numerical method is the Crank–Nicolson scheme, combined with either a dense linear solver or the Thomas algorithm when the matrix structure is tridiagonal.
 
 ---
 
-## 7. Crank–Nicolson scheme
+## 1. Physical problem
 
-The Crank–Nicolson method is obtained by averaging the Hamiltonian action between the old and new time levels. If the Schrödinger equation is written as
-
-$$
-i\frac{\partial \psi}{\partial t}=H\psi,
-$$
-
-then Crank–Nicolson gives
+The time-dependent Schrödinger equation describes the evolution of a quantum state. In one spatial dimension, and in the dimensionless units used in this project, it can be written as
 
 $$
-\left(I+\frac{i\Delta t}{2}H\right)\psi^{n+1}
+i\frac{\partial \psi(x,t)}{\partial t}
 =
-\left(I-\frac{i\Delta t}{2}H\right)\psi^n.
+-\frac{\partial^2 \psi(x,t)}{\partial x^2}
++
+V(x)\psi(x,t).
 $$
 
-This can be written compactly as
+Here, $\psi(x,t)$ is the complex wave function and $V(x)$ is the external potential. The measurable probability density is
 
 $$
-A\psi^{n+1}=B\psi^n.
+\rho(x,t)=|\psi(x,t)|^2.
 $$
 
-At each time step, the method solves a linear system. This is more expensive than an explicit update, but it has much better stability and norm-conservation properties.
+The total probability must remain normalized:
 
-For a Hermitian Hamiltonian, Crank–Nicolson is unitary up to numerical roundoff. This makes it especially appropriate for quantum mechanics.
+$$
+\int |\psi(x,t)|^2 dx = 1.
+$$
+
+A good numerical method for Schrödinger evolution should therefore preserve the norm as accurately as possible.
 
 ---
 
-## 8. Matrix structure
+## 2. Why this equation is different from diffusion
 
-Using centred finite differences, the discrete Hamiltonian contains nearest-neighbour couplings:
+Although the Schrödinger equation contains a second spatial derivative, it is not a diffusion equation. The factor $i$ in front of the time derivative changes the physical character of the equation.
 
-$$
-H_{j,j}=\frac{2}{\Delta x^2}+V_j,
-$$
+A diffusion equation smooths profiles and dissipates information. The Schrödinger equation instead generates unitary time evolution. Probability density can spread, interfere, reflect and transmit, but the total probability should remain conserved.
 
-$$
-H_{j,j+1}=H_{j,j-1}=-\frac{1}{\Delta x^2}.
-$$
-
-For Dirichlet boundary conditions, the interior problem is tridiagonal. This is important because a tridiagonal system can be solved efficiently using the Thomas algorithm.
-
-The matrices $A$ and $B$ inherit this structure. The code therefore compares a generic dense solver with a specialized tridiagonal solver.
+This is why methods that work for the heat equation are not automatically appropriate for quantum evolution. Numerical stability and norm conservation become central diagnostics.
 
 ---
 
-## 9. Thomas algorithm
+## 3. Wave packets
 
-The Thomas algorithm is a specialized direct solver for tridiagonal systems. A tridiagonal matrix contains nonzero entries only on the main diagonal, the upper diagonal and the lower diagonal.
-
-The algorithm performs:
-
-1. forward elimination,
-2. backward substitution.
-
-Its computational cost scales as
+A common initial state is a Gaussian wave packet:
 
 $$
-O(N),
+\psi(x,0)
+=
+\exp\left[-\frac{(x-x_0)^2}{2\sigma^2}\right]
+\exp(ik_0x).
 $$
 
-whereas dense linear solvers generally scale much worse for large matrices.
+The Gaussian envelope localizes the particle around $x_0$, while the complex phase gives it a mean momentum related to $k_0$.
 
-This is why Thomas is attractive for one-dimensional finite-difference quantum simulations with Dirichlet boundary conditions.
+After constructing the packet, it is normalized numerically:
+
+$$
+\psi(x,0)
+\leftarrow
+\frac{\psi(x,0)}
+{\sqrt{\int |\psi(x,0)|^2 dx}}.
+$$
+
+This makes the total probability equal to one at the start of the simulation.
 
 ---
 
-## 10. Boundary conditions
+## 4. Potentials studied
 
-Two types of boundary conditions are considered.
+The numerical code can evolve the wave packet under several representative potentials.
 
-Dirichlet boundary conditions impose
-
-$$
-\psi(x_{\min},t)=0,
-\qquad
-\psi(x_{\max},t)=0.
-$$
-
-These represent hard walls. They are appropriate for an infinite well or for a finite numerical box where the wave packet is not expected to reach the boundaries too strongly.
-
-Periodic boundary conditions impose
+For a free particle,
 
 $$
-\psi(x_{\min},t)=\psi(x_{\max},t).
+V(x)=0.
 $$
 
-They represent a ring-like topology. The matrix is no longer purely tridiagonal because the first and last grid points are coupled. For that reason, the Thomas algorithm is not directly applicable to the periodic case in the same simple form.
+For an infinite well, the wave function is confined by hard-wall boundary conditions. In the interior, the potential may be treated as zero, while the walls are imposed through Dirichlet conditions.
+
+For a harmonic oscillator,
+
+$$
+V(x)=\frac{1}{2}\omega^2x^2.
+$$
+
+For a finite well,
+
+$$
+V(x)=
+\begin{cases}
+-V_0, & |x|<a/2,\\
+0, & |x|\ge a/2.
+\end{cases}
+$$
+
+For a rectangular barrier,
+
+$$
+V(x)=
+\begin{cases}
+V_0, & |x|<a/2,\\
+0, & |x|\ge a/2.
+\end{cases}
+$$
+
+These cases test qualitatively different quantum behaviour: free spreading, confinement, oscillation, reflection and transmission.
 
 ---
 
-## 11. Norm conservation
+## 5. Spatial and temporal discretization
 
-The norm is computed as
+The spatial domain is discretized as
 
 $$
-N(t)=\int |\psi(x,t)|^2dx.
+x_j=x_{\min}+j\Delta x,
 $$
 
-Numerically, this is approximated by a quadrature or grid sum. Since $|\psi|^2$ is a probability density, the norm should remain close to one.
+and time is discretized as
 
-Norm conservation is one of the most important validation checks in this project. If the norm drifts significantly, possible causes include:
+$$
+t^n=n\Delta t.
+$$
 
-- unstable time integration,
-- excessively large time step,
-- inconsistent boundary treatment,
-- loss of unitarity from the numerical method,
-- accumulated roundoff error.
+The wave function on the grid is written as
 
-Crank–Nicolson should preserve the norm very accurately when implemented correctly.
+$$
+\psi_j^n \approx \psi(x_j,t^n).
+$$
+
+The second spatial derivative is approximated by the centred finite difference
+
+$$
+\frac{\partial^2 \psi}{\partial x^2}
+\approx
+\frac{
+\psi_{j+1}-2\psi_j+\psi_{j-1}
+}{\Delta x^2}.
+$$
+
+This approximation naturally produces a tridiagonal matrix for Dirichlet boundary conditions.
 
 ---
 
-## 12. Analytical and spectral reference solutions
+## 6. Explicit FTCS and its limitation
 
-Numerical results are compared with reference solutions when possible.
+A direct explicit discretization updates the wave function using only the previous time level. This is simple, but it is not the preferred method for the Schrödinger equation.
 
-For an infinite well, stationary eigenstates have sinusoidal spatial dependence and phase evolution
+The reason is that the exact quantum evolution is unitary. A poor explicit scheme can introduce artificial growth or damping of the wave-function norm. Even if the equation is physically conservative, the numerical method may not be.
 
-$$
-\psi_n(x,t)=\phi_n(x)e^{-iE_nt}.
-$$
-
-A general initial state can be expanded as
-
-$$
-\psi(x,0)=\sum_n c_n\phi_n(x).
-$$
-
-The time evolution is then
-
-$$
-\psi(x,t)=\sum_n c_n\phi_n(x)e^{-iE_nt}.
-$$
-
-For generic finite wells or barriers, a discrete Hamiltonian can be diagonalized to obtain a spectral reference solution. This gives a useful independent check of the Crank–Nicolson evolution.
-
----
-
-## 13. Reflection and transmission
-
-For scattering problems, the packet approaches a finite well or barrier. Part of the probability density may be reflected and part may be transmitted.
-
-The reflected probability can be estimated by integrating on the left side:
-
-$$
-R(t)=\int_{x
+Therefore, the project focuses on Crank–Nicolson, which is much better suited to Schrödinger evolution.
