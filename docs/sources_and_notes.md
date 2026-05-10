@@ -1,23 +1,28 @@
 # Sources and Notes
 
-## Code provenance
-The main implementation originates from the course/research-style script now located at:
+This repository is based on coursework and personal notes from the subject Introduction to Modelling in the Physics degree at the University of Alicante.
 
-- `src/schrodinger_crank_nicolson.py`
+The project corresponds to the numerical study of the one-dimensional time-dependent Schrödinger equation using finite differences and Crank–Nicolson time evolution.
 
-Its numerical logic and physical parameter choices were preserved during this repository organization task.
+The theoretical background comes from notes on:
 
-## Original report
-If available in the repository, the original course report is stored at:
+- classification of partial differential equations,
+- finite-difference discretization,
+- explicit and implicit time evolution,
+- stability analysis,
+- FTCS schemes,
+- Crank–Nicolson methods,
+- tridiagonal systems,
+- Thomas algorithm,
+- time-dependent Schrödinger equation,
+- wave packets,
+- norm conservation,
+- quantum scattering diagnostics.
 
-- `notes/original_course_report/practica7parteII.pdf`
+The uploaded code was cleaned and organized as a portfolio repository. The numerical logic and physical parameters were preserved.
 
-## Project organization note
-The current folder layout separates:
-- source code (`src/`),
-- technical documentation (`docs/`),
-- generated visual artifacts (`figures/...`), and
-- archival/report material (`notes/...`).
+Author:
 
-## Scope note
-This restructuring is documentation and organization focused. It does not claim new simulations, new physics, or modified numerical algorithms.
+María Lourdes Domínguez Cacho  
+Final-semester Physics student, University of Alicante  
+GitHub: mldc3
