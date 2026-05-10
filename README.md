@@ -1,85 +1,95 @@
-# 1D Schrödinger Equation with Crank–Nicolson Wave-Packet Simulations
+# 1D Time-Dependent Schrödinger Equation with Crank–Nicolson Wave Packets
 
-This portfolio project organizes a coursework/research-style numerical study of the 1D time-dependent Schrödinger equation using Crank–Nicolson propagation of Gaussian wave packets, including boundary-condition analysis, solver comparisons, conservation checks, and scattering diagnostics.
+This repository is a cleaned, portfolio-ready version of a computational physics project for the 1D time-dependent Schrödinger equation. It studies Gaussian wave-packet dynamics with finite differences and Crank–Nicolson time stepping across multiple physical scenarios.
 
-## 1. Scientific motivation
-The objective is to simulate quantum wave-packet dynamics in one spatial dimension and evaluate numerical behavior under different physical setups and boundary conditions.
+## What equation is solved
 
-## 2. Time-dependent Schrödinger equation in 1D
-The simulations solve the standard 1D time-dependent Schrödinger equation for a complex wave function \(\psi(x,t)\), with user-defined potentials for free propagation, wells, barriers, and harmonic confinement.
+The simulations evolve the complex wave function $\psi(x,t)$ using
 
-## 3. Gaussian wave-packet initialization
-Initial states are Gaussian wave packets with configurable center, width, and carrier wave number, normalized numerically before time evolution.
+$$
+i\frac{\partial \psi}{\partial t} = -\frac{\partial^2 \psi}{\partial x^2} + V(x)\psi.
+$$
 
-## 4. Crank–Nicolson time evolution
-Time stepping follows the Crank–Nicolson implicit midpoint discretization, yielding stable linear systems at each step.
+## Why this equation matters
 
-## 5. Dirichlet and periodic boundary conditions
-The implementation includes both:
-- **Dirichlet boundaries** (hard-wall endpoints).
-- **Periodic boundaries** (wrapped spatial domain couplings).
+The time-dependent Schrödinger equation is the core dynamical model of nonrelativistic quantum mechanics. It predicts how probability amplitudes propagate, interfere, reflect, and transmit in external potentials.
 
-## 6. Thomas algorithm versus dense linear solver
-For tridiagonal systems (Dirichlet case), the project compares:
-- Dense linear solve (`numpy.linalg.solve`), and
-- Thomas tridiagonal solver.
+## What Crank–Nicolson contributes
 
-## 7. Norm conservation
-A dedicated diagnostic tracks conservation of \(\int |\psi|^2 dx\) during propagation in the free-packet setting.
+Crank–Nicolson provides an implicit, stable, second-order time update with strong norm-conservation behavior for Hermitian Hamiltonians. In practice, this makes long-time quantum propagation more reliable than naive explicit updates.
+
+## Boundary conditions studied
+
+- **Dirichlet boundaries:** hard-wall endpoints, useful for boxed domains and infinite-well-style setups.
+- **Periodic boundaries:** wrap-around domain, where left and right edges are coupled.
+
+## Why norm conservation matters
+
+A central diagnostic is the discrete probability norm
+
+$$
+N(t)=\int |\psi(x,t)|^2\,dx.
+$$
+
+For physically consistent Schrödinger evolution, $N(t)$ should remain approximately constant. The repository includes dedicated norm-conservation plots.
 
 ![Norm conservation (free packet)](figures/validation/norm_conservation_free_packet.png)
 
-## 8. Comparison with analytical or spectral reference solutions
-The repository contains visual comparisons against analytical/spectral references where applicable, plus absolute error plotting for the infinite-well case.
+## What the Thomas algorithm comparison demonstrates
 
-## 9. Infinite well and harmonic oscillator examples
-Examples include:
-- Infinite well packet evolution and CN vs analytical comparison.
-- Harmonic-potential packet comparison against analytical behavior.
+For Dirichlet finite-difference systems, the matrix is tridiagonal. The project compares:
+
+- dense linear solves, and
+- Thomas tridiagonal solves.
+
+This demonstrates that exploiting matrix structure can preserve the same physics with lower computational cost.
+
+## What the analytical comparisons validate
+
+The infinite-well and harmonic-oscillator comparisons test whether numerical propagation reproduces known analytical/spectral behavior and expected error trends.
 
 ![Infinite well: CN vs analytical](figures/analytical_comparison/infinite_well_cn_vs_analytical.gif)
 ![Harmonic packet: CN vs analytical](figures/analytical_comparison/harmonic_packet_cn_vs_analytical.gif)
 
-## 10. Reflection and transmission through wells/barriers
-Scattering diagnostics are included for finite wells and rectangular barriers using reflection/transmission trends.
+## What the scattering figures show
+
+Finite-well and barrier cases show wave-packet splitting into reflected and transmitted components, with diagnostics based on integrated probability on each side of the interaction region.
 
 ![Rectangular barrier reflection/transmission](figures/scattering/rectangular_barrier_reflection_transmission.png)
 ![Finite well reflection/transmission](figures/scattering/finite_well_reflection_transmission.png)
 
-## 11. Repository structure
+## How to run
 
-```text
-src/
-  schrodinger_crank_nicolson.py
+1. Create and activate a Python environment.
+2. Install dependencies:
 
-docs/
-  theory.md
-  numerical_method.md
-  results_summary.md
-  sources_and_notes.md
-
-figures/
-  free_packet/
-  boundary_conditions/
-  validation/
-  analytical_comparison/
-  scattering/
-  performance/
-
-notes/
-  original_course_report/
-
-raw_upload/
+```bash
+pip install -r requirements.txt
 ```
 
-## 12. Skills demonstrated
-- Numerical PDE discretization for quantum dynamics.
-- Complex-valued linear-algebra workflows in Python.
-- Boundary-condition and solver-comparison studies.
-- Validation practices (norm conservation, convergence/error trends).
-- Scientific project organization and reproducible documentation.
+3. Run the main script:
 
-## 13. Author
+```bash
+python src/schrodinger_crank_nicolson.py
+```
+
+## Where things are
+
+- Main code: `src/schrodinger_crank_nicolson.py`
+- Documentation: `docs/theory.md`, `docs/numerical_method.md`, `docs/results_summary.md`, `docs/sources_and_notes.md`
+- Figures: `figures/free_packet/`, `figures/boundary_conditions/`, `figures/validation/`, `figures/analytical_comparison/`, `figures/scattering/`, `figures/performance/`
+
+## Skills demonstrated
+
+- Finite-difference PDE discretization for quantum dynamics
+- Implicit time integration (Crank–Nicolson)
+- Complex-valued linear algebra and tridiagonal solvers
+- Boundary-condition analysis (Dirichlet vs periodic)
+- Numerical validation (norm, convergence, analytical checks)
+- Scientific communication with organized results and reproducible documentation
+
+## Author
+
 **María Lourdes Domínguez Cacho**  
 Final-semester Physics student, University of Alicante  
 GitHub: [mldc3](https://github.com/mldc3)

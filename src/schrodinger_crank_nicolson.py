@@ -1,3 +1,5 @@
+"""Numerical experiments for the 1D time-dependent Schrödinger equation using Crank–Nicolson, including boundary-condition tests, norm diagnostics, analytical comparisons, and scattering plots."""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.sparse import diags, csr_matrix, lil_matrix
