@@ -1,34 +1,17 @@
-# Theory Background and Numerical Method: 1D Time-Dependent Schrödinger Equation
+# Numerical Method
 
-This document explains the physical background, numerical method, implementation choices, and diagnostic tests used in the one-dimensional Schrödinger wave-packet simulations.
+The simulations solve the 1D time-dependent Schrödinger equation using a finite-difference spatial grid and fixed time steps. The wave function is stored as complex values $\psi_j^n \approx \psi(x_j,t^n)$ on a uniform grid.
 
-The project studies the time evolution of a quantum wave function $\psi(x,t)$ under different potentials and boundary conditions. The main numerical method is the Crank-Nicolson scheme, which is used because it is stable and preserves the quantum norm very well. The code also compares different linear solvers, mainly a dense solver and the Thomas algorithm for tridiagonal systems.
+The spatial second derivative is approximated with the centred stencil $\partial_x^2\psi \approx (\psi_{j+1}-2\psi_j+\psi_{j-1})/\Delta x^2$. This gives a discrete Hamiltonian with nearest-neighbour coupling.
 
-The general computational workflow is:
+Time evolution is performed with the Crank–Nicolson method. Writing the equation as $i\partial_t\psi=H\psi$, the update is $(I+\frac{i\Delta t}{2}H)\psi^{n+1}=(I-\frac{i\Delta t}{2}H)\psi^n$, or equivalently $A\psi^{n+1}=B\psi^n$.
 
-```python
-# 1. Build spatial grid
-x = np.linspace(x_min, x_max, N)
-dx = x[1] - x[0]
+This method is used because it is stable and preserves the probability norm much better than a simple explicit scheme. Since quantum evolution should conserve $\int |\psi|^2dx$, norm conservation is one of the main validation checks.
 
-# 2. Choose time step and number of steps
-dt = ...
-steps = ...
+The code supports two boundary conditions. Dirichlet boundaries fix the wave function to zero at the endpoints, representing hard walls. Periodic boundaries connect the first and last grid points, representing a ring-like domain.
 
-# 3. Define potential V(x)
-V = V_func(x)
+For Dirichlet boundaries, the Crank–Nicolson matrix is tridiagonal. The code can solve this system either with a dense linear solver or with the Thomas algorithm, which is more efficient for tridiagonal systems.
 
-# 4. Build initial Gaussian wave packet
-psi0 = gaussian_packet(x, x0, sigma, k0)
+For periodic boundaries, the first and last grid points are coupled, so the matrix is not purely tridiagonal in the simple form used here. The current implementation therefore uses dense linear algebra for the periodic case.
 
-# 5. Normalize wave function
-psi0 = psi0 / sqrt(integral(|psi0|^2 dx))
-
-# 6. Evolve with Crank-Nicolson
-for n in range(steps):
-    psi = CN_step(psi, V, dx, dt, resolver="thomas", cc_tipo="dirichlet")
-
-# 7. Compute diagnostics
-norm = integral(|psi|^2 dx)
-density = |psi|^2
-reflection, transmission = integrate_left_right_regions(...)
+The repository includes diagnostics for norm conservation, convergence with respect to grid and timestep size, computational-cost comparisons between solvers, analytical or spectral validation cases, and reflection/transmission analysis for scattering potentials.
