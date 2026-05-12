@@ -11,9 +11,7 @@ The project studies the time evolution of quantum wave packets under different p
 The time-dependent Schrödinger equation describes the evolution of a quantum state. In one spatial dimension, and in the dimensionless units used in this project, it can be written as
 
 $$
-i\frac{\partial \psi(x,t)}{\partial t}
-=
--\frac{\partial^2 \psi(x,t)}{\partial x^2}
+i\frac{\partial \psi(x,t)}{\partial t} = -\frac{\partial^2 \psi(x,t)}{\partial x^2}
 +
 V(x)\psi(x,t).
 $$
@@ -49,8 +47,7 @@ This is why methods that work for the heat equation are not automatically approp
 A common initial state is a Gaussian wave packet:
 
 $$
-\psi(x,0)
-=
+\psi(x,0) =
 \exp\left[-\frac{(x-x_0)^2}{2\sigma^2}\right]
 \exp(ik_0x).
 $$
@@ -167,8 +164,7 @@ $$
 then Crank–Nicolson gives
 
 $$
-\left(I+\frac{i\Delta t}{2}H\right)\psi^{n+1}
-=
+\left(I+\frac{i\Delta t}{2}H\right)\psi^{n+1} =
 \left(I-\frac{i\Delta t}{2}H\right)\psi^n.
 $$
 
