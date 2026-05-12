@@ -7,11 +7,6 @@ The main implementation originates from the course/research-style script now loc
 
 Its numerical logic and physical parameter choices were preserved during this repository organization task.
 
-## Original report
-If available in the repository, the original course report is stored at:
-
-- `notes/original_course_report/practica7parteII.pdf`
-
 ## Project organization note
 The current folder layout separates:
 - source code (`src/`),
