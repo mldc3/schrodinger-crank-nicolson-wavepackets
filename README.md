@@ -72,14 +72,3 @@ notes/
 raw_upload/
 ```
 
-## 12. Skills demonstrated
-- Numerical PDE discretization for quantum dynamics.
-- Complex-valued linear-algebra workflows in Python.
-- Boundary-condition and solver-comparison studies.
-- Validation practices (norm conservation, convergence/error trends).
-- Scientific project organization and reproducible documentation.
-
-## 13. Author
-**María Lourdes Domínguez Cacho**  
-Final-semester Physics student, University of Alicante  
-GitHub: [mldc3](https://github.com/mldc3)
