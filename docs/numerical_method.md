@@ -6,9 +6,9 @@ The code discretizes space on a uniform 1D grid and advances time in fixed steps
 ## Crank–Nicolson scheme
 Time evolution uses the Crank–Nicolson method, forming linear systems of the form
 
-\[
+$$
 A\,\psi^{n+1} = B\,\psi^n.
-\]
+$$
 
 The implementation builds these matrices from the Laplacian stencil and potential contribution.
 
