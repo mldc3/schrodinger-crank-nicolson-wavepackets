@@ -6,7 +6,7 @@ This portfolio project organizes a coursework/research-style numerical study of 
 The objective is to simulate quantum wave-packet dynamics in one spatial dimension and evaluate numerical behavior under different physical setups and boundary conditions.
 
 ## 2. Time-dependent Schrödinger equation in 1D
-The simulations solve the standard 1D time-dependent Schrödinger equation for a complex wave function \(\psi(x,t)\), with user-defined potentials for free propagation, wells, barriers, and harmonic confinement.
+The simulations solve the standard 1D time-dependent Schrödinger equation for a complex wave function \( \psi(x,t) \), with user-defined potentials for free propagation, wells, barriers, and harmonic confinement.
 
 ## 3. Gaussian wave-packet initialization
 Initial states are Gaussian wave packets with configurable center, width, and carrier wave number, normalized numerically before time evolution.
